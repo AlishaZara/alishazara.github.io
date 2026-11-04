@@ -1,7 +1,7 @@
 // SplitIt Web: the screens. Data and syncing live in data.js; money rules in core.js.
 import { html, render, useState, useEffect, useMemo, useRef } from "https://unpkg.com/htm@3.1.1/preact/standalone.module.js";
 import * as C from "./core.js?v=20261104b";
-import * as D from "./data.js?v=20261104c";
+import * as D from "./data.js?v=20261104d";
 
 // ---------- Helpers ----------
 const CATEGORIES = [["Trip", "✈️"], ["Outing", "🍽️"], ["Home", "🏠"], ["Event", "🎉"], ["Other", "📌"]];
@@ -109,14 +109,16 @@ function ProfileForm({ first, onDone }) {
   const s = D.state;
   const p = s.profile;
   const [name, setName] = useState(p ? p.name : s.user.name);
-  const [phone, setPhone] = useState(s.myPhone || "");
   const [adults, setAdults] = useState(p ? p.adults : 1);
   const [kids, setKids] = useState(p ? p.kids : 0);
   const [friends, setFriends] = useState(p ? p.friends : 0);
+  // Typed number, used only while WhatsApp verification is off (as in version 2.2).
+  const [phone, setPhone] = useState(s.myPhone || "");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const wa = D.whatsappOn();
   const phoneBad = phone.trim() !== "" && !C.phoneKey(phone);
-  const phoneOk = !!C.phoneKey(phone);
+  const phoneOk = wa ? s.phoneVerified : !!C.phoneKey(phone);
   const save = async () => {
     setBusy(true); setMsg("");
     const err = await D.saveProfile({ name, phone, adults, kids, friends });
@@ -124,13 +126,14 @@ function ProfileForm({ first, onDone }) {
     if (err) setMsg(err); else onDone && onDone();
   };
   return html`<div class="card stack" style="max-width:560px">
-    <h2>${first ? (p ? "Add your phone number" : "Set up your profile") : "Your profile"}</h2>
+    <h2>${first ? (p ? (wa ? "Verify your phone number" : "Add your phone number") : "Set up your profile") : "Your profile"}</h2>
     ${first && html`<p class="muted" style="margin:0">${p
-      ? "SplitIt now needs a phone number on every account, so friends can find you by number. Add yours to carry on."
-      : `Signed in as ${s.user.email}. Add your name, phone number and who usually comes with you, so friends can find you and add you with your family in one tap.`}</p>`}
+      ? (wa ? "SplitIt now verifies every account's phone number, so friends can find the right person. It takes one WhatsApp message."
+        : "SplitIt now needs a phone number on every account, so friends can find you by number. Add yours to carry on.")
+      : `Signed in as ${s.user.email}. ${wa ? "Verify" : "Add"} your phone number and say who usually comes with you, so friends can find you and add you with your family in one tap.`}</p>`}
     <label class="field">Your name<input class="input" value=${name} maxlength="100" onInput=${(e) => setName(e.target.value)} /></label>
-    <label class="field">Phone number<input class="input ${phoneBad ? "error" : ""}" value=${phone} maxlength="20" inputmode="tel" autocomplete="tel" required placeholder="+1 555 010 1234" onInput=${(e) => setPhone(e.target.value)} />
-      <span class="hint ${phoneBad ? "error" : ""}">${phoneBad ? "Enter a full phone number" : `${phone.trim() ? "" : "Required. "}Lets friends find you by number as well as by ${s.user.email}`}</span></label>
+    ${wa ? html`<${PhoneVerification} />` : html`<label class="field">Phone number<input class="input ${phoneBad ? "error" : ""}" value=${phone} maxlength="20" inputmode="tel" autocomplete="tel" required placeholder="+1 555 010 1234" onInput=${(e) => setPhone(e.target.value)} />
+      <span class="hint ${phoneBad ? "error" : ""}">${phoneBad ? "Enter a full phone number" : `${phone.trim() ? "" : "Required. "}Lets friends find you by number as well as by ${s.user.email}`}</span></label>`}
     <h3>Who usually comes with you?</h3>
     <${Stepper} label="Adults (including you)" value=${adults} min=${1} onChange=${setAdults} />
     <${Stepper} label="Kids" value=${kids} min=${0} onChange=${setKids} />
@@ -140,7 +143,51 @@ function ProfileForm({ first, onDone }) {
     <div class="row"><button class="btn primary" disabled=${busy || !name.trim() || !phoneOk} onClick=${save}>${busy ? "Saving…" : first ? "Save and continue" : "Save"}</button>
       ${!first && html`<button class="btn text" onClick=${onDone}>Cancel</button>`}
       ${first && html`<button class="btn text" onClick=${() => D.signOut()}>Sign out</button>`}</div>
-    <p class="small muted" style="margin:0">Phone numbers aren't verified by SMS. Others see your name, email and how many people come with you, never your number.</p>
+    <p class="small muted" style="margin:0">Your number is only used so friends can find you. Others see your name, email and how many people come with you, never your number.</p>
+  </div>`;
+}
+
+/** Proving your phone number: WhatsApp opens with a code ready to send to SplitIt; this updates by itself. */
+function PhoneVerification() {
+  const s = D.state;
+  const [check, setCheck] = useState(null);
+  const [since, setSince] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState("");
+  const done = check && s.phoneVerified && s.phoneVerifiedAt !== since;
+  useEffect(() => { if (done) setCheck(null); }, [done]);
+  const desktop = useMemo(() => matchMedia("(pointer: fine)").matches, []);
+  const qr = useMemo(() => {
+    if (!check || !window.qrcode) return "";
+    const q = window.qrcode(0, "M"); q.addData(check.link); q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+  }, [check]);
+  const start = async () => {
+    setBusy(true); setProblem("");
+    const r = await D.startPhoneCheck();
+    setBusy(false);
+    if (r.problem) { setProblem(r.problem); return; }
+    setSince(s.phoneVerifiedAt); setCheck(r);
+    if (!desktop) window.open(r.link, "_blank", "noopener");
+  };
+  return html`<div class="card stack verify">
+    <h3>Phone number</h3>
+    ${check ? html`
+      <p class="row" style="margin:0"><span class="spinner"></span><b>Waiting for your WhatsApp message…</b></p>
+      ${desktop && qr ? html`<div class="row verify-qr"><div class="qr" dangerouslySetInnerHTML=${{ __html: qr }}></div>
+        <p class="small muted" style="margin:0">Scan with your phone's camera to open WhatsApp, then tap <b>Send</b>.
+          Or <a href=${check.link} target="_blank" rel="noopener">open WhatsApp on this computer</a>.</p></div>`
+        : html`<p class="small muted" style="margin:0">Tap <b>Send</b> in WhatsApp, then come back here.</p>`}
+      <p class="small muted" style="margin:0">Or send the code <b class="code">${check.code}</b> to <b>+${check.number}</b> on WhatsApp. It works for 15 minutes.</p>
+      <div class="row">${!desktop && html`<a class="btn text small" href=${check.link} target="_blank" rel="noopener">Open WhatsApp again</a>`}
+        <button class="btn text small" onClick=${() => setCheck(null)}>Cancel</button></div>`
+    : s.phoneVerified ? html`
+      <p style="margin:0"><b>${s.myPhone}</b> <span class="good">✓ Verified</span></p>
+      <p class="small muted" style="margin:0">Friends can find you by this number as well as by ${s.user.email}.</p>`
+    : html`<p class="muted" style="margin:0">Required. ${desktop ? "Click the button and scan the code with your phone" : "Tap the button"}: WhatsApp opens with a short message to SplitIt. Just tap Send, and your WhatsApp number is verified in a few seconds. No SMS, no typing.</p>`}
+    ${problem && html`<p class="bad small" style="margin:0">${problem}</p>`}
+    ${!check && html`<div class="row"><button class=${"btn " + (s.phoneVerified ? "ghost" : "primary")} disabled=${busy} onClick=${start}>
+      ${busy ? "Starting…" : s.phoneVerified ? "Change number" : "Verify with WhatsApp"}</button></div>`}
   </div>`;
 }
 

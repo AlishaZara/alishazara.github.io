@@ -8,6 +8,7 @@ import {
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache, connectFirestoreEmulator,
   collection, doc, query, where, onSnapshot, writeBatch, getDocFromServer, arrayUnion, arrayRemove, terminate, clearIndexedDbPersistence,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import * as C from "./core.js?v=20261104b";
 
@@ -41,6 +42,7 @@ if (usesEmulator) {
 // ---------- A tiny observable state ----------
 export const state = {
   user: null, authReady: false, profile: null, profileLoaded: false, myPhone: "", phoneLoaded: false,
+  phoneVerified: false, phoneVerifiedAt: 0, whatsapp: "", savedPhone: "", configLoaded: false,
   groups: new Map(), status: "signed-out", error: null, ready: false,
 };
 const subs = new Set();
@@ -123,10 +125,22 @@ function startWatching(u) {
     changed();
   }, () => {}));
   listeners.push(onSnapshot(doc(db, "private", u.uid), { includeMetadataChanges: true }, (s) => {
-    state.myPhone = (s.exists() && s.data().phone) || "";
+    const d = s.exists() ? s.data() : {};
+    state.phoneVerified = d.verified === true;
+    state.phoneVerifiedAt = Number(d.verifiedAt) || 0;
+    state.savedPhone = d.phone || "";
+    setMyPhone();
     if (s.exists() || !s.metadata.fromCache) state.phoneLoaded = true;
     changed();
   }, () => {}));
+  // SplitIt's WhatsApp number. Not readable or not there: WhatsApp verification is off and
+  // people type their number instead.
+  listeners.push(onSnapshot(doc(db, "config", "public"), { includeMetadataChanges: true }, (s) => {
+    state.whatsapp = String((s.exists() && s.data().whatsapp) || "").replace(/\D/g, "");
+    if (s.exists() || !s.metadata.fromCache) state.configLoaded = true;
+    setMyPhone();
+    changed();
+  }, () => { state.whatsapp = ""; state.configLoaded = true; setMyPhone(); changed(); }));
   listenToGroups(u, 0);
 }
 
@@ -158,6 +172,7 @@ function stopWatching() {
   if (groupsListener) groupsListener(); groupsListener = null;
   watches.forEach((w) => w.stop()); watches.clear();
   state.groups = new Map(); state.profile = null; state.profileLoaded = false; state.myPhone = ""; state.phoneLoaded = false;
+  state.phoneVerified = false; state.phoneVerifiedAt = 0; state.savedPhone = ""; state.whatsapp = ""; state.configLoaded = false;
 }
 
 function updateStatus() {
@@ -237,33 +252,79 @@ function applyMyFamily(only) {
 }
 
 /**
- * Signed in but without a profile or a phone number. A phone number is required, so the app
- * asks for one before anything else (people who signed up when it was optional too).
+ * Signed in but without a profile or a verified phone number. Both are required, so the app
+ * asks for them before anything else (people who signed up before verification too).
  */
+export const whatsappOn = () => !!state.whatsapp;
+/** Your phone number: proved on WhatsApp when that's on, otherwise the one you typed. */
+function setMyPhone() { state.myPhone = whatsappOn() && !state.phoneVerified ? "" : state.savedPhone; }
+
 export function needsProfile() {
-  return !!state.user && state.profileLoaded && state.phoneLoaded && (!state.profile || !C.phoneKey(state.myPhone || ""));
+  if (!state.user || !state.profileLoaded || !state.phoneLoaded || !state.configLoaded) return false;
+  return !state.profile || (whatsappOn() ? !state.phoneVerified : !C.phoneKey(state.savedPhone || ""));
 }
 
-export async function saveProfile({ name, phone, adults, kids, friends }) {
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O or 1/I
+export function newCode() {
+  const r = crypto.getRandomValues(new Uint8Array(6));
+  return Array.from(r, (b) => CODE_CHARS[b % 32]).join("");
+}
+export const whatsappLink = (number, code) =>
+  `https://wa.me/${number}?text=${encodeURIComponent("SplitIt verification code: " + code)}`;
+
+/**
+ * Starts proving your phone number: saves a one-time code for your account and returns the
+ * WhatsApp link that sends it to SplitIt. The verification server does the rest, and
+ * state.phoneVerified turns true a few seconds after the message is sent.
+ */
+export async function startPhoneCheck() {
+  const u = state.user;
+  if (!u) return { problem: "Sign in first." };
+  if (!state.whatsapp) return { problem: "Phone verification isn't available right now. Try again later." };
+  const code = newCode();
+  try {
+    const b = writeBatch(db);
+    b.set(doc(db, "phoneChecks", u.uid), { code, createdAt: serverTimestamp() });
+    await b.commit();
+    return { code, number: state.whatsapp, link: whatsappLink(state.whatsapp, code) };
+  } catch (e) {
+    console.warn(e);
+    return { problem: "Couldn't start. Check your internet connection and try again." };
+  }
+}
+
+/**
+ * Saves your profile and makes you findable by your email and phone number. With WhatsApp
+ * verification on, the number must already be proved (phone is ignored); otherwise phone is
+ * the number you typed.
+ */
+export async function saveProfile({ name, phone = "", adults, kids, friends }) {
   const u = state.user;
   if (!u) return "Sign in first.";
   if (!name.trim()) return "Enter your name.";
-  const newPhone = C.phoneKey(phone);
-  if (!newPhone) return phone.trim() ? "Enter a full phone number." : "Enter your phone number.";
+  let typed = null;
+  if (whatsappOn()) {
+    if (!state.phoneVerified) return "Verify your phone number first.";
+  } else {
+    typed = C.phoneKey(phone);
+    if (!typed) return phone.trim() ? "Enter a full phone number." : "Enter your phone number.";
+  }
   try {
-    const oldPhone = C.phoneKey(state.myPhone || "");
-    if (newPhone !== oldPhone) {
-      const d = await getDocFromServer(doc(db, "lookup", "p:" + newPhone));
-      if (d.exists() && d.data().uid !== u.uid) return "That number is already used by another SplitIt account.";
-      if (!d.exists()) await writeBatch(db).set(doc(db, "lookup", "p:" + newPhone), { uid: u.uid }).commit();
-    }
-    if (oldPhone && oldPhone !== newPhone) {
-      try { const b = writeBatch(db); b.delete(doc(db, "lookup", "p:" + oldPhone)); await b.commit(); } catch (e) { /* not ours any more */ }
+    if (typed) {
+      const oldPhone = C.phoneKey(state.savedPhone || "");
+      if (typed !== oldPhone) {
+        const d = await getDocFromServer(doc(db, "lookup", "p:" + typed));
+        if (d.exists() && d.data().uid !== u.uid) return "That number is already used by another SplitIt account.";
+        if (!d.exists()) await writeBatch(db).set(doc(db, "lookup", "p:" + typed), { uid: u.uid }).commit();
+      }
+      if (oldPhone && oldPhone !== typed) {
+        try { const b = writeBatch(db); b.delete(doc(db, "lookup", "p:" + oldPhone)); await b.commit(); } catch (e) { /* not ours any more */ }
+      }
     }
     const e = await getDocFromServer(doc(db, "lookup", "e:" + u.email));
     const b = writeBatch(db);
     if (!e.exists()) b.set(doc(db, "lookup", "e:" + u.email), { uid: u.uid });
-    b.set(doc(db, "private", u.uid), { phone: phone.trim().slice(0, 20) });
+    if (typed) b.set(doc(db, "private", u.uid), { phone: phone.trim().slice(0, 20) });
     b.set(doc(db, "profiles", u.uid), {
       name: name.trim().slice(0, 100), email: u.email, adults: clampInt(adults, 1, 30), kids: clampInt(kids, 0, 30),
       friends: clampInt(friends, 0, 30), updatedAt: Date.now(),
