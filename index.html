@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SplitIt – Split trip costs fairly</title>
+  <meta name="description" content="SplitIt is a free Android app for splitting group expenses on trips and outings. Families and kids, adult and kid prices, tax shared fairly, any currency, real-time sharing with Google sign-in, and it works offline.">
+  <meta name="theme-color" content="#00897b">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <meta property="og:title" content="SplitIt – Split trip costs fairly">
+  <meta property="og:description" content="Split group expenses with families, kids, taxes and any currency. Shares live with friends, works offline.">
+  <meta property="og:image" content="https://phaneeswark.github.io/splitit-app/assets/screens/home.jpg">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // Apply a saved theme before the page paints.
+    try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="top">
+  <div class="wrap nav">
+    <a class="brand" href="#top"><img src="assets/icon.svg" alt="">SplitIt</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How to use</a></li>
+      <li><a href="#video">Video</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn theme-btn" id="theme-btn" aria-label="Switch light or dark theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a class="btn btn-primary btn-small" href="#download">Download</a>
+      <button class="icon-btn menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="reveal">
+        <span class="eyebrow">Free Android app · No ads</span>
+        <h1>Split trip costs <span>fairly</span>, families and kids included.</h1>
+        <p class="lead">SplitIt keeps track of who paid what on trips, outings and at home. Count every adult and kid, use separate adult and kid prices, share taxes fairly, and settle up in the fewest payments. Share a group with friends and see expenses appear live on every phone.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#download">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            Download for Android
+          </a>
+          <a class="btn btn-ghost" href="#video">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg>
+            Watch how it works
+          </a>
+        </div>
+        <p class="hero-meta">Version 2.0 · Android 8.0 or newer · 3 MB</p>
+        <ul class="chips">
+          <li>👨‍👩‍👧 Families &amp; kids</li>
+          <li>🧾 Tax split fairly</li>
+          <li>⚡ Real-time sync</li>
+          <li>📴 Works offline</li>
+          <li>🔒 PIN &amp; fingerprint</li>
+        </ul>
+      </div>
+      <div class="hero-phones reveal" aria-hidden="true">
+        <div class="phone"><img src="assets/screens/home.jpg" alt="" width="540" height="1200"></div>
+        <div class="phone"><img src="assets/screens/expense_age_split.jpg" alt="" width="540" height="1200"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="strip reveal">
+      <div><strong>Any currency</strong><span>₹, $, €, ¥ and 150+ more</span></div>
+      <div><strong>Per-person splits</strong><span>Every adult and kid counts</span></div>
+      <div><strong>Fewest payments</strong><span>Suggested settle-ups</span></div>
+      <div><strong>Private by default</strong><span>Unshared groups stay on your phone</span></div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Features</span>
+        <h2>Everything a group trip needs</h2>
+        <p>Made for real trips: families with kids, entry tickets priced per adult and kid, bills with GST, and friends who live in different cities.</p>
+      </div>
+      <div class="features">
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+          <h3>Groups for anything</h3>
+          <p>Trips, outings, flatmates, team lunches. Add people any time, split among everyone or only some of them.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="5" r="2.5"/><circle cx="17" cy="5" r="2.5"/><circle cx="12" cy="12" r="2"/><path d="M4 21v-6a3 3 0 0 1 6 0v6M14 21v-6a3 3 0 0 1 6 0v6M10 21v-3a2 2 0 0 1 4 0v3"/></svg></div>
+          <h3>Families &amp; kids</h3>
+          <p>A family counts as its adults and kids. Change who came for a single expense with one tap: "2 adults · 1 kid".</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div>
+          <h3>Adult &amp; kid prices, tax shared</h3>
+          <p>Enter ₹1,200 per adult and ₹600 per kid, plus the total you actually paid. GST and charges are shared in proportion.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5M3 21v-5h5"/></svg></div>
+          <h3>Live sharing</h3>
+          <p>Sign in with Google and share a group. Everyone adds expenses from their own phone and sees changes within seconds.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+          <h3>Find friends by email or phone</h3>
+          <p>Add a SplitIt user by their Gmail or phone number. Their family comes along, straight from their profile.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-1a6 6 0 0 1 12 0v1"/><path d="m16 11 2 2 4-4"/></svg></div>
+          <h3>Friends tab</h3>
+          <p>One-to-one balances across all your groups: "Ananya owes you ₹8,097". Tap a friend to settle up group by group.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 12.5a10 10 0 0 1 5.2-2.7M19 12.5a10 10 0 0 0-2-1.5M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8a15 15 0 0 0-11-3.7"/><circle cx="12" cy="20" r=".5"/></svg></div>
+          <h3>Works offline</h3>
+          <p>Every phone keeps a full copy. Add expenses on a mountain with no signal; they sync when you're back online.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
+          <h3>Any currency</h3>
+          <p>Each group has a default currency and each expense can use its own. Balances are kept per currency, never guessed.</p>
+        </article>
+        <article class="feature reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+          <h3>App lock</h3>
+          <p>Protect your expenses with a PIN, fingerprint or face unlock. Hide the app's content from the recent-apps screen.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase -->
+  <section class="section alt" id="tour">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Take a tour</span>
+        <h2>Clear at a glance</h2>
+        <p>Tap a screen to see it.</p>
+      </div>
+      <div class="showcase">
+        <div class="tabs" role="tablist" aria-label="App screens">
+          <button class="tab" role="tab" aria-selected="true" data-shot="home"><h3>Your groups</h3><p>Totals and what's left to settle for every group.</p></button>
+          <button class="tab" role="tab" aria-selected="false" data-shot="group_expenses"><h3>Expenses</h3><p>Who paid, who it's split between, adult and kid prices, tax and settle-up payments.</p></button>
+          <button class="tab" role="tab" aria-selected="false" data-shot="group_balances"><h3>Balances</h3><p>Who's up and who's down, with the fewest payments to settle everyone.</p></button>
+          <button class="tab" role="tab" aria-selected="false" data-shot="friends"><h3>Friends</h3><p>One-to-one totals with each person across all your groups.</p></button>
+          <button class="tab" role="tab" aria-selected="false" data-shot="group_people"><h3>People &amp; families</h3><p>Families with their adults and kids, linked to their accounts.</p></button>
+          <button class="tab" role="tab" aria-selected="false" data-shot="balances_dark"><h3>Dark mode</h3><p>Follows your phone's light or dark theme.</p></button>
+        </div>
+        <div class="phone reveal"><img id="showcase-img" src="assets/screens/home.jpg" alt="SplitIt groups screen" width="540" height="1200"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to use -->
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">How to use</span>
+        <h2>Step-by-step guides</h2>
+        <p>Pick a topic. Each guide shows exactly what to tap.</p>
+      </div>
+      <div class="guides">
+        <div class="guide-list" role="tablist" aria-label="Guides">
+          <button role="tab" aria-selected="true" data-guide="g-start"><span class="n">1</span>Install &amp; sign in</button>
+          <button role="tab" aria-selected="false" data-guide="g-group"><span class="n">2</span>Create a group</button>
+          <button role="tab" aria-selected="false" data-guide="g-people"><span class="n">3</span>Add people</button>
+          <button role="tab" aria-selected="false" data-guide="g-expense"><span class="n">4</span>Add an expense</button>
+          <button role="tab" aria-selected="false" data-guide="g-prices"><span class="n">5</span>Adult &amp; kid prices, tax</button>
+          <button role="tab" aria-selected="false" data-guide="g-counts"><span class="n">6</span>Who came this time</button>
+          <button role="tab" aria-selected="false" data-guide="g-share"><span class="n">7</span>Share &amp; invite</button>
+          <button role="tab" aria-selected="false" data-guide="g-settle"><span class="n">8</span>Balances &amp; settle up</button>
+          <button role="tab" aria-selected="false" data-guide="g-friends"><span class="n">9</span>Friends tab</button>
+          <button role="tab" aria-selected="false" data-guide="g-manage"><span class="n">10</span>Edit or delete groups</button>
+          <button role="tab" aria-selected="false" data-guide="g-lock"><span class="n">11</span>App lock</button>
+        </div>
+        <div>
+          <article class="guide active" id="g-start">
+            <div>
+              <h3>Install SplitIt and sign in</h3>
+              <ol>
+                <li><a href="#download">Download the APK</a> on your Android phone and open it. If asked, allow "Install unknown apps" for your browser or file manager, then tap <strong>Install</strong>.</li>
+                <li>Open SplitIt. You can use it straight away without an account; groups stay on your phone.</li>
+                <li>To share groups with friends, tap the account icon at the top and choose <strong>Sign in with Google</strong>.</li>
+                <li>Set up your profile: your name, an optional phone number, and who usually comes with you (for example 2 adults including you and 1 kid).</li>
+              </ol>
+              <p class="tip"><strong>Why a profile?</strong> When a friend adds you to a group, your family comes along automatically, and if your family size changes, every group you're in updates.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/signin.jpg" alt="Sign in with Google screen" width="540" height="1200"></div>
+              <div class="phone"><img loading="lazy" src="assets/screens/profile.jpg" alt="Profile setup with adults, kids and friends" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-group">
+            <div>
+              <h3>Create a group</h3>
+              <ol>
+                <li>On the <strong>Groups</strong> tab, tap <strong>New group</strong>.</li>
+                <li>Enter a name (for example "Goa trip"), pick a type and the default currency.</li>
+                <li><strong>Add me to this group</strong> is ticked, bringing your family from your profile. Turn off <strong>Bring my family from my profile</strong> to pick different numbers, or untick <strong>Add me</strong> if you're only organising.</li>
+                <li>Tap <strong>Create</strong>. SplitIt then asks you to add the other people.</li>
+              </ol>
+              <p class="tip">You can't create two groups with the same name, so trips never get mixed up.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/new_group.jpg" alt="New group dialog with Add me and family from profile" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-people">
+            <div>
+              <h3>Add people</h3>
+              <ol>
+                <li>In a group, open <strong>People</strong> and tap <strong>Add people</strong>.</li>
+                <li>Choose <strong>Create manually</strong> to type a name. Tick <strong>This is a family</strong> to set adults and kids. Works for anyone, even without SplitIt.</li>
+                <li>Or choose <strong>Add a SplitIt user</strong> and search by their exact Gmail address or phone number.</li>
+                <li>Check the name and email shown, then tap <strong>Add</strong>. Their family joins from their profile, and the group is shared with them.</li>
+              </ol>
+              <p class="tip">People who already joined but aren't in the list appear at the top as suggestions. Phone numbers match with or without the country code.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/add_people_choice.jpg" alt="Choose create manually or add a SplitIt user" width="540" height="1200"></div>
+              <div class="phone"><img loading="lazy" src="assets/screens/find_user.jpg" alt="Find a SplitIt user by phone number" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-expense">
+            <div>
+              <h3>Add an expense</h3>
+              <ol>
+                <li>In a group, tap <strong>Add expense</strong>.</li>
+                <li>Enter the expense name and amount (both required), and an optional description. Change the currency if needed.</li>
+                <li>Pick who paid. You're picked by default.</li>
+                <li>Choose <strong>Everyone in the group</strong> or <strong>Only some members</strong>, and check the share shown next to each person.</li>
+                <li>Tap <strong>Save</strong>.</li>
+              </ol>
+              <p class="tip">Equal splits count every person: a family of 3 pays three shares, a single person one.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/expense_new_top.jpg" alt="Add expense form" width="540" height="1200"></div>
+              <div class="phone"><img loading="lazy" src="assets/screens/expense_new_split.jpg" alt="Split between people with per-person shares" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-prices">
+            <div>
+              <h3>Adult &amp; kid prices, and tax</h3>
+              <ol>
+                <li>In the expense form, choose <strong>Adult &amp; kid prices</strong>.</li>
+                <li>Enter the price per adult and per kid. SplitIt works out the ticket total.</li>
+                <li>If the bill came to more (GST, service charges), enter <strong>Total paid, with tax</strong>.</li>
+                <li>The extra is shared in proportion to each family's ticket cost. Each person shows "₹3,000 + ₹540 tax".</li>
+              </ol>
+              <p class="tip">A lower total is shared as a discount the same way.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/expense_age_top.jpg" alt="Adult and kid prices with total paid" width="540" height="1200"></div>
+              <div class="phone"><img loading="lazy" src="assets/screens/expense_age_split.jpg" alt="Tax shared by ticket cost" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-counts">
+            <div>
+              <h3>Change who came, for one expense</h3>
+              <ol>
+                <li>In the expense form, each person shows their adults and kids, like "2 adults · 1 kid ✎".</li>
+                <li>Tap it to change how many of them were part of this expense.</li>
+                <li>The shares update straight away. Other expenses aren't affected.</li>
+              </ol>
+              <p class="tip">Saved expenses keep the counts they were saved with, so old totals never change by surprise.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/counts_dialog.jpg" alt="Change adults and kids for one expense" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-share">
+            <div>
+              <h3>Share a group and invite friends</h3>
+              <ol>
+                <li>Sign in with Google first (account icon on the home screen).</li>
+                <li>Open the group, tap <strong>⋮</strong> and choose <strong>Share with friends</strong>.</li>
+                <li>Invite people by the Gmail address they sign in with, or add them as SplitIt users from <strong>Add people</strong>.</li>
+                <li>They see the group as soon as they sign in. Everyone can add and edit expenses.</li>
+              </ol>
+              <p class="tip">The person who shared the group can remove people or <strong>Delete for everyone</strong>; others can <strong>Leave group</strong>.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/group_menu.jpg" alt="Group menu with Shared with" width="540" height="1200"></div>
+              <div class="phone"><img loading="lazy" src="assets/screens/share_dialog.jpg" alt="Shared with list and invite by Gmail" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-settle">
+            <div>
+              <h3>Balances and settling up</h3>
+              <ol>
+                <li>Open the group's <strong>Balances</strong> tab to see who's up and who's down, per currency.</li>
+                <li><strong>Suggested payments</strong> lists the fewest payments that settle everyone.</li>
+                <li>When someone pays, tap <strong>Mark paid</strong> (or <strong>Record payment</strong>) and the balances update for everyone.</li>
+              </ol>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/group_balances.jpg" alt="Balances with suggested payments" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-friends">
+            <div>
+              <h3>The Friends tab</h3>
+              <ol>
+                <li>Tap <strong>Friends</strong> at the bottom of the home screen.</li>
+                <li>Each person shows what you owe each other across all groups: "owes you", "you owe" or "settled up".</li>
+                <li>Tap a friend to see the amount in each group, and <strong>Settle</strong> any of them.</li>
+              </ol>
+              <p class="tip">In groups only on your phone, SplitIt asks once <strong>Which one is you?</strong> so it knows your share.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/friends.jpg" alt="Friends tab with balances" width="540" height="1200"></div>
+              <div class="phone"><img loading="lazy" src="assets/screens/friend_detail.jpg" alt="One friend's balance per group" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-manage">
+            <div>
+              <h3>Edit or delete groups</h3>
+              <ol>
+                <li>Long-press a group on the home screen to select it. Tap more groups to select them too.</li>
+                <li>Tap <strong>✎</strong> to rename it or change its type and currency (one group at a time).</li>
+                <li>Tap <strong>🗑</strong> to delete. SplitIt says first what will happen to shared groups.</li>
+              </ol>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/long_press.jpg" alt="Group selected with edit and delete" width="540" height="1200"></div>
+            </div>
+          </article>
+
+          <article class="guide" id="g-lock">
+            <div>
+              <h3>Lock the app</h3>
+              <ol>
+                <li>Tap the lock icon on the home screen.</li>
+                <li>Turn on <strong>Lock with PIN</strong> and choose a 4–6 digit PIN (not your bank or UPI PIN).</li>
+                <li>Optionally turn on <strong>Unlock with fingerprint or face</strong>, and choose when SplitIt locks after you leave it.</li>
+              </ol>
+              <p class="tip">Your PIN is stored only as a secure hash on your phone. Wrong guesses make you wait longer each time.</p>
+            </div>
+            <div class="shots">
+              <div class="phone"><img loading="lazy" src="assets/screens/lock_settings.jpg" alt="App lock settings" width="540" height="1200"></div>
+              <div class="phone"><img loading="lazy" src="assets/screens/lock_screen.jpg" alt="Lock screen with PIN pad" width="540" height="1200"></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Video -->
+  <section class="section alt" id="video">
+    <div class="wrap video-grid">
+      <div class="phone reveal">
+        <video controls preload="metadata" playsinline poster="assets/screens/home.jpg" width="540" height="1200">
+          <source src="assets/demo.mp4" type="video/mp4">
+          Your browser can't play this video. <a href="assets/demo.mp4">Download it</a>.
+        </video>
+      </div>
+      <div class="reveal">
+        <span class="eyebrow">Video walkthrough</span>
+        <h2>See it in two minutes</h2>
+        <p class="muted">A real recording of SplitIt on a phone, start to finish:</p>
+        <ul class="video-steps">
+          <li><span class="dot">1</span><div><strong>Create a group</strong><br><span class="muted">"Coorg weekend" in rupees, with you and your family added automatically.</span></div></li>
+          <li><span class="dot">2</span><div><strong>Add people</strong><br><span class="muted">Rahul, and Meera's family of 2 adults and 1 kid.</span></div></li>
+          <li><span class="dot">3</span><div><strong>Add expenses</strong><br><span class="muted">A homestay split per person, and a camp with adult and kid prices.</span></div></li>
+          <li><span class="dot">4</span><div><strong>Check balances and friends</strong><br><span class="muted">Who owes whom, and one-to-one totals on the Friends tab.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="section" id="screens">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Screenshots</span>
+        <h2>More screens</h2>
+        <p>Scroll sideways; tap any screen to enlarge it.</p>
+      </div>
+      <div class="gallery">
+        <figure><div class="phone"><img loading="lazy" src="assets/screens/group_expenses.jpg" alt="Group expenses" width="540" height="1200"></div><figcaption>Expenses</figcaption></figure>
+        <figure><div class="phone"><img loading="lazy" src="assets/screens/group_people.jpg" alt="People in a group" width="540" height="1200"></div><figcaption>People &amp; families</figcaption></figure>
+        <figure><div class="phone"><img loading="lazy" src="assets/screens/expense_age_split.jpg" alt="Tax shared by ticket cost" width="540" height="1200"></div><figcaption>Tax shared fairly</figcaption></figure>
+        <figure><div class="phone"><img loading="lazy" src="assets/screens/find_user.jpg" alt="Find a SplitIt user" width="540" height="1200"></div><figcaption>Find friends</figcaption></figure>
+        <figure><div class="phone"><img loading="lazy" src="assets/screens/account.jpg" alt="Account and profile" width="540" height="1200"></div><figcaption>Account &amp; profile</figcaption></figure>
+        <figure><div class="phone"><img loading="lazy" src="assets/screens/home_dark.jpg" alt="Groups in dark mode" width="540" height="1200"></div><figcaption>Dark mode</figcaption></figure>
+        <figure><div class="phone"><img loading="lazy" src="assets/screens/lock_screen.jpg" alt="Lock screen" width="540" height="1200"></div><figcaption>App lock</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security -->
+  <section class="section alt" id="security">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Security &amp; privacy</span>
+        <h2>Your money talk stays yours</h2>
+        <p>No ads, no tracking, no selling data. Here's exactly how your data is handled.</p>
+      </div>
+      <div class="security">
+        <div class="card reveal"><h3>📱 On your phone first</h3><p>Groups you don't share never leave your phone. Shared groups are also kept in full on every member's phone.</p></div>
+        <div class="card reveal"><h3>🛡️ Locked-down sharing</h3><p>Shared groups sync through Google Firebase. Only the Google accounts you invite can read or change a group, enforced on the server, not just in the app.</p></div>
+        <div class="card reveal"><h3>🔑 Strong app lock</h3><p>Your PIN is stored only as a salted, slow hash. Fingerprint unlock uses your phone's secure hardware and turns off if fingerprints change.</p></div>
+        <div class="card reveal"><h3>👤 Minimal sign-in</h3><p>Google sign-in gives SplitIt only your name and email. Your phone number is optional, used only so friends can find you, and never shown to others.</p></div>
+        <div class="card reveal"><h3>🧱 Hardened app</h3><p>The app is signed with a private key and its code is shrunk and scrambled, with no source names or debug logs inside. The app's source code isn't published.</p></div>
+        <div class="card reveal"><h3>💾 Encrypted backups only</h3><p>Android backups include your groups only when the backup is encrypted. Your PIN and lock settings are never backed up.</p></div>
+      </div>
+      <p class="muted" style="text-align:center;margin-top:28px">Read the full <a href="privacy.html">privacy policy</a>.</p>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section class="section" id="download">
+    <div class="wrap">
+      <div class="download reveal">
+        <div style="position:relative;z-index:1">
+          <span class="eyebrow" style="color:#b2dfdb">Download</span>
+          <h2>Get SplitIt for Android</h2>
+          <p>Free, no ads, no account needed to start.</p>
+          <a class="btn btn-primary" id="download-btn" href="https://github.com/phaneeswark/splitit-app/releases/latest/download/SplitIt.apk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            Download SplitIt.apk
+          </a>
+          <dl class="meta">
+            <dt>Version</dt><dd>2.0</dd>
+            <dt>Size</dt><dd>3 MB</dd>
+            <dt>Requires</dt><dd>Android 8.0 or newer</dd>
+            <dt>SHA-256</dt><dd><code id="sha">be88115f970f36747c65ef991747e1fd5353c27a54e64148ec92ec42f285c976</code><button class="copy" id="copy-sha" type="button">Copy</button></dd>
+          </dl>
+        </div>
+        <div class="install">
+          <h3 style="color:#fff">Installing</h3>
+          <ol>
+            <li>Open the downloaded <strong>SplitIt.apk</strong> on your phone.</li>
+            <li>If Android asks, allow <strong>Install unknown apps</strong> for your browser or file manager.</li>
+            <li>Tap <strong>Install</strong>. If Play Protect asks, choose <strong>Install anyway</strong>; this app isn't from the Play Store.</li>
+            <li>Updates install over the old version and keep your groups.</li>
+          </ol>
+          <p style="margin:12px 0 0;opacity:.85;font-size:.9rem">Only download SplitIt from this page. The SHA-256 above lets you check the file hasn't been changed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section alt" id="faq">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions people ask</h2>
+      </div>
+      <div class="faq">
+        <details class="reveal"><summary>Is SplitIt free?</summary><p>Yes. No ads, no subscriptions, no in-app purchases.</p></details>
+        <details class="reveal"><summary>Do I need an account?</summary><p>No. You can create groups and split expenses without signing in; they stay on your phone. Sign in with Google only when you want to share a group with friends.</p></details>
+        <details class="reveal"><summary>Does it need internet?</summary><p>Only to share. Everything works offline, including shared groups; changes you make offline sync when you're back online.</p></details>
+        <details class="reveal"><summary>Do my friends need the app?</summary><p>Only if they want to see and add expenses themselves. You can add anyone by name and track their share yourself.</p></details>
+        <details class="reveal"><summary>How are families counted?</summary><p>For equal splits, every adult and kid counts as one person. With adult and kid prices, each family pays for its adults and kids. Friends travelling with someone count as adults.</p></details>
+        <details class="reveal"><summary>How is tax shared?</summary><p>Enter the ticket prices and the total you paid. The difference (GST, service charge) is shared in proportion to what each family's tickets cost.</p></details>
+        <details class="reveal"><summary>Can I use different currencies?</summary><p>Yes, any currency. Each expense can have its own. Balances are kept separately per currency; SplitIt never converts with guessed exchange rates.</p></details>
+        <details class="reveal"><summary>Is there an iPhone version?</summary><p>Not yet. SplitIt is Android only for now. Sign in with Apple isn't available on Android.</p></details>
+        <details class="reveal"><summary>Why do I see a warning when installing?</summary><p>Android warns about any app installed from outside the Play Store. SplitIt is signed with its own private key; check the SHA-256 on this page if you want to be sure your file is genuine.</p></details>
+        <details class="reveal"><summary>I forgot my PIN. What now?</summary><p>For security there's no PIN reset. Clear SplitIt's storage in Android Settings to start over. Shared groups come back when you sign in again; groups only on your phone are deleted.</p></details>
+        <details class="reveal"><summary>How do I delete my data?</summary><p>Delete groups on your phone with a long-press. For shared groups, leave them or delete them for everyone if you created them. To remove your profile, <a href="#contact">contact us</a>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section" id="contact">
+    <div class="wrap contact">
+      <div class="reveal">
+        <span class="eyebrow">Contact</span>
+        <h2>Questions, ideas or bugs?</h2>
+        <p class="muted">Send a message and we'll reply by email. For bugs, tell us your phone model and what you tapped.</p>
+        <div class="contact-points">
+          <div><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><strong>Replies by email</strong><br><span class="muted">Usually within a couple of days.</span></div></div>
+          <div><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><div><strong>Your details stay private</strong><br><span class="muted">Used only to answer you.</span></div></div>
+        </div>
+      </div>
+      <form class="form reveal" id="contact-form" novalidate>
+        <div class="row">
+          <label>Your name<input name="name" autocomplete="name" required maxlength="100"></label>
+          <label>Your email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        </div>
+        <label>Topic
+          <select name="topic">
+            <option>Question</option>
+            <option>Bug report</option>
+            <option>Feature idea</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label>Message<textarea name="message" required maxlength="4000"></textarea></label>
+        <label class="hp" aria-hidden="true">Leave this empty<input name="_honey" tabindex="-1" autocomplete="off"></label>
+        <button class="btn btn-primary" type="submit" id="contact-submit">Send message</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/icon.svg" alt="">SplitIt</a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#how">How to use</a>
+      <a href="#download">Download</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <span>© <span id="year">2026</span> SplitIt</span>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Screenshot">
+  <button class="icon-btn" id="lightbox-close" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <img id="lightbox-img" alt="">
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

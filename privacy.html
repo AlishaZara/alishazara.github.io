@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SplitIt Privacy Policy</title>
+  <meta name="description" content="How the SplitIt Android app handles your data.">
+  <meta name="theme-color" content="#00897b">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<header class="site-header scrolled">
+  <div class="wrap nav">
+    <a class="brand" href="index.html"><img src="assets/icon.svg" alt="">SplitIt</a>
+    <div class="nav-actions" style="margin-left:auto">
+      <a class="btn btn-ghost btn-small" href="index.html">Back to home</a>
+    </div>
+  </div>
+</header>
+<main class="doc">
+  <h1>Privacy policy</h1>
+  <p class="muted">Last updated: 3 November 2026</p>
+  <p>SplitIt is an Android app for splitting shared expenses. This page explains what data the app uses, where it's kept and who can see it. In short: there are no ads, no analytics and no tracking, and your data is never sold.</p>
+
+  <h2>Data that stays on your phone</h2>
+  <ul>
+    <li>Groups you don't share, with their people, expenses and payments, are stored only in the app's private storage on your phone.</li>
+    <li>If you turn on the app lock, your PIN is stored only as a salted hash on your phone. Fingerprint and face unlock are handled by Android; SplitIt never sees your fingerprint.</li>
+    <li>Android's own backup may include your groups, but only when the backup is end-to-end encrypted. Lock settings are never backed up.</li>
+  </ul>
+
+  <h2>When you sign in and share</h2>
+  <ul>
+    <li><strong>Google sign-in:</strong> SplitIt receives your name and email address from Google. It doesn't get your password or access to your Gmail, Drive or contacts.</li>
+    <li><strong>Shared groups</strong> are stored in Google Firebase (Cloud Firestore) so members can sync. Only the Google accounts listed in a group can read or change it; this is enforced by Firebase's security rules on the server.</li>
+    <li><strong>Your profile</strong> (name, email, and how many adults, kids and friends usually come with you) can be seen by signed-in SplitIt users who search for your exact email or phone number, so they can add you to a group.</li>
+    <li><strong>Your phone number</strong> is optional. It's used only to let people find you by that exact number. It isn't shown to anyone, and only you can read it. Phone numbers aren't verified by SMS.</li>
+    <li>Each phone also keeps a copy of the shared groups it can see, so the app works offline.</li>
+  </ul>
+
+  <h2>Contact form</h2>
+  <p>Messages sent from this website's contact form are delivered by email through FormSubmit (formsubmit.co). We use your name and email only to reply to you.</p>
+
+  <h2>Deleting your data</h2>
+  <ul>
+    <li>Delete groups on your phone with a long-press on the home screen.</li>
+    <li>For shared groups, you can leave a group, or delete it for everyone if you created it.</li>
+    <li>Signing out removes shared groups from that phone.</li>
+    <li>To remove your profile and search entries completely, use the <a href="index.html#contact">contact form</a>.</li>
+  </ul>
+
+  <h2>Children</h2>
+  <p>SplitIt lets parents count their kids for splitting costs. It doesn't collect any information from children; kids are only a number on a family's entry.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the date at the top will change too.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about privacy? Use the <a href="index.html#contact">contact form</a>.</p>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="assets/icon.svg" alt="">SplitIt</a>
+    <span>© 2026 SplitIt</span>
+  </div>
+</footer>
+</body>
+</html>
