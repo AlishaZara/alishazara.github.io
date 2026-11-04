@@ -14,11 +14,13 @@ The site has:
 
 **Download the app:** [latest SplitIt.apk](https://github.com/phaneeswark/splitit-app/releases/latest/download/SplitIt.apk) (Android 8.0 or newer).
 
-This repository holds only the website. The app's source code is not published here.
+This repository holds the website and SplitIt Web (the browser version). The Android app's source code is not published here.
 
 ## Files
 - `index.html`: the main page.
 - `privacy.html`: the privacy policy.
 - `assets/`: styles, script, app icon, screenshots and the demo video.
+- `app/`: **SplitIt Web**, the browser version (https://phaneeswark.github.io/splitit-app/app/). It signs in with Google and syncs live with the Android app through the same Firebase project. Access is enforced by Firestore security rules.
+- `tests/`: checks that the web app splits money exactly like the Android app (`node --test tests/*.test.mjs`).
 
 It's a static site with no build step, served by GitHub Pages from the `main` branch.
