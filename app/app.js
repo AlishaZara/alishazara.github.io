@@ -1,7 +1,7 @@
 // SplitIt Web: the screens. Data and syncing live in data.js; money rules in core.js.
 import { html, render, useState, useEffect, useMemo, useRef } from "https://unpkg.com/htm@3.1.1/preact/standalone.module.js";
-import * as C from "./core.js";
-import * as D from "./data.js";
+import * as C from "./core.js?v=20261104b";
+import * as D from "./data.js?v=20261104b";
 
 // ---------- Helpers ----------
 const CATEGORIES = [["Trip", "✈️"], ["Outing", "🍽️"], ["Home", "🏠"], ["Event", "🎉"], ["Other", "📌"]];
