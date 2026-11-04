@@ -40,7 +40,7 @@ if (usesEmulator) {
 
 // ---------- A tiny observable state ----------
 export const state = {
-  user: null, authReady: false, profile: null, profileLoaded: false, myPhone: "",
+  user: null, authReady: false, profile: null, profileLoaded: false, myPhone: "", phoneLoaded: false,
   groups: new Map(), status: "signed-out", error: null, ready: false,
 };
 const subs = new Set();
@@ -122,7 +122,11 @@ function startWatching(u) {
     if (state.profile && JSON.stringify(old) !== JSON.stringify(state.profile)) applyMyFamily();
     changed();
   }, () => {}));
-  listeners.push(onSnapshot(doc(db, "private", u.uid), (s) => { state.myPhone = (s.exists() && s.data().phone) || ""; changed(); }, () => {}));
+  listeners.push(onSnapshot(doc(db, "private", u.uid), { includeMetadataChanges: true }, (s) => {
+    state.myPhone = (s.exists() && s.data().phone) || "";
+    if (s.exists() || !s.metadata.fromCache) state.phoneLoaded = true;
+    changed();
+  }, () => {}));
   listenToGroups(u, 0);
 }
 
@@ -153,7 +157,7 @@ function stopWatching() {
   listeners.forEach((f) => f()); listeners = [];
   if (groupsListener) groupsListener(); groupsListener = null;
   watches.forEach((w) => w.stop()); watches.clear();
-  state.groups = new Map(); state.profile = null; state.profileLoaded = false; state.myPhone = "";
+  state.groups = new Map(); state.profile = null; state.profileLoaded = false; state.myPhone = ""; state.phoneLoaded = false;
 }
 
 function updateStatus() {
@@ -232,14 +236,23 @@ function applyMyFamily(only) {
   }
 }
 
+/**
+ * Signed in but without a profile or a phone number. A phone number is required, so the app
+ * asks for one before anything else (people who signed up when it was optional too).
+ */
+export function needsProfile() {
+  return !!state.user && state.profileLoaded && state.phoneLoaded && (!state.profile || !C.phoneKey(state.myPhone || ""));
+}
+
 export async function saveProfile({ name, phone, adults, kids, friends }) {
   const u = state.user;
   if (!u) return "Sign in first.";
+  if (!name.trim()) return "Enter your name.";
   const newPhone = C.phoneKey(phone);
-  if (phone.trim() && !newPhone) return "Enter a full phone number.";
+  if (!newPhone) return phone.trim() ? "Enter a full phone number." : "Enter your phone number.";
   try {
     const oldPhone = C.phoneKey(state.myPhone || "");
-    if (newPhone && newPhone !== oldPhone) {
+    if (newPhone !== oldPhone) {
       const d = await getDocFromServer(doc(db, "lookup", "p:" + newPhone));
       if (d.exists() && d.data().uid !== u.uid) return "That number is already used by another SplitIt account.";
       if (!d.exists()) await writeBatch(db).set(doc(db, "lookup", "p:" + newPhone), { uid: u.uid }).commit();
@@ -250,7 +263,7 @@ export async function saveProfile({ name, phone, adults, kids, friends }) {
     const e = await getDocFromServer(doc(db, "lookup", "e:" + u.email));
     const b = writeBatch(db);
     if (!e.exists()) b.set(doc(db, "lookup", "e:" + u.email), { uid: u.uid });
-    b.set(doc(db, "private", u.uid), { phone: newPhone ? phone.trim().slice(0, 20) : "" });
+    b.set(doc(db, "private", u.uid), { phone: phone.trim().slice(0, 20) });
     b.set(doc(db, "profiles", u.uid), {
       name: name.trim().slice(0, 100), email: u.email, adults: clampInt(adults, 1, 30), kids: clampInt(kids, 0, 30),
       friends: clampInt(friends, 0, 30), updatedAt: Date.now(),

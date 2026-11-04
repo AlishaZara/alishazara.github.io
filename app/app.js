@@ -1,7 +1,7 @@
 // SplitIt Web: the screens. Data and syncing live in data.js; money rules in core.js.
 import { html, render, useState, useEffect, useMemo, useRef } from "https://unpkg.com/htm@3.1.1/preact/standalone.module.js";
 import * as C from "./core.js?v=20261104b";
-import * as D from "./data.js?v=20261104b";
+import * as D from "./data.js?v=20261104c";
 
 // ---------- Helpers ----------
 const CATEGORIES = [["Trip", "✈️"], ["Outing", "🍽️"], ["Home", "🏠"], ["Event", "🎉"], ["Other", "📌"]];
@@ -116,6 +116,7 @@ function ProfileForm({ first, onDone }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const phoneBad = phone.trim() !== "" && !C.phoneKey(phone);
+  const phoneOk = !!C.phoneKey(phone);
   const save = async () => {
     setBusy(true); setMsg("");
     const err = await D.saveProfile({ name, phone, adults, kids, friends });
@@ -123,19 +124,22 @@ function ProfileForm({ first, onDone }) {
     if (err) setMsg(err); else onDone && onDone();
   };
   return html`<div class="card stack" style="max-width:560px">
-    <h2>${first ? "Set up your profile" : "Your profile"}</h2>
-    ${first && html`<p class="muted" style="margin:0">So friends can find you and add you with your family in one tap.</p>`}
+    <h2>${first ? (p ? "Add your phone number" : "Set up your profile") : "Your profile"}</h2>
+    ${first && html`<p class="muted" style="margin:0">${p
+      ? "SplitIt now needs a phone number on every account, so friends can find you by number. Add yours to carry on."
+      : `Signed in as ${s.user.email}. Add your name, phone number and who usually comes with you, so friends can find you and add you with your family in one tap.`}</p>`}
     <label class="field">Your name<input class="input" value=${name} maxlength="100" onInput=${(e) => setName(e.target.value)} /></label>
-    <label class="field">Phone number (optional)<input class="input ${phoneBad ? "error" : ""}" value=${phone} maxlength="20" inputmode="tel" placeholder="+1 555 010 1234" onInput=${(e) => setPhone(e.target.value)} />
-      <span class="hint ${phoneBad ? "error" : ""}">${phoneBad ? "Enter a full phone number" : `Lets friends find you by number as well as by ${s.user.email}`}</span></label>
+    <label class="field">Phone number<input class="input ${phoneBad ? "error" : ""}" value=${phone} maxlength="20" inputmode="tel" autocomplete="tel" required placeholder="+1 555 010 1234" onInput=${(e) => setPhone(e.target.value)} />
+      <span class="hint ${phoneBad ? "error" : ""}">${phoneBad ? "Enter a full phone number" : `${phone.trim() ? "" : "Required. "}Lets friends find you by number as well as by ${s.user.email}`}</span></label>
     <h3>Who usually comes with you?</h3>
     <${Stepper} label="Adults (including you)" value=${adults} min=${1} onChange=${setAdults} />
     <${Stepper} label="Kids" value=${kids} min=${0} onChange=${setKids} />
     <${Stepper} label="Friends" value=${friends} min=${0} onChange=${setFriends} />
     <p class="small muted" style="margin:0">When someone adds you to a group, you're added as one family of ${count(adults + kids + friends, "person", "people")} (friends count as adults).</p>
     ${msg && html`<p class="bad" style="margin:0">${msg}</p>`}
-    <div class="row"><button class="btn primary" disabled=${busy || !name.trim() || phoneBad} onClick=${save}>${busy ? "Saving…" : "Save"}</button>
-      ${!first && html`<button class="btn text" onClick=${onDone}>Cancel</button>`}</div>
+    <div class="row"><button class="btn primary" disabled=${busy || !name.trim() || !phoneOk} onClick=${save}>${busy ? "Saving…" : first ? "Save and continue" : "Save"}</button>
+      ${!first && html`<button class="btn text" onClick=${onDone}>Cancel</button>`}
+      ${first && html`<button class="btn text" onClick=${() => D.signOut()}>Sign out</button>`}</div>
     <p class="small muted" style="margin:0">Phone numbers aren't verified by SMS. Others see your name, email and how many people come with you, never your number.</p>
   </div>`;
 }
@@ -580,7 +584,7 @@ function AccountPage() {
     <div class="card row"><${Avatar} name=${s.user.name} size=${48} /><div class="grow"><b>${s.user.name}</b><div class="small muted">${s.user.email}</div></div></div>
     ${editing ? html`<${ProfileForm} onDone=${() => setEditing(false)} />` : html`<div class="card stack"><h3>Your profile</h3>
       ${p ? html`<span>You come with: ${[count(p.adults, "adult", "adults"), p.kids && count(p.kids, "kid", "kids"), p.friends && count(p.friends, "friend", "friends")].filter(Boolean).join(" · ")}</span>
-        <span class="small muted">${s.myPhone ? `Findable by email and ${s.myPhone}` : "Findable by your email"}</span>` : html`<span class="muted">Not set up yet.</span>`}
+        <span class="small muted">${s.myPhone ? `Findable by email and ${s.myPhone}` : "Add your phone number to finish your profile"}</span>` : html`<span class="muted">Not set up yet.</span>`}
       <button class="btn ghost" style="justify-self:start" onClick=${() => setEditing(true)}>${p ? "Edit profile" : "Set up profile"}</button></div>`}
     <div class="card stack"><h3>App</h3>
       <span class="small muted">Get the Android app for offline use on your phone, app lock and more.</span>
@@ -595,7 +599,7 @@ function App() {
   const route = useRoute();
   if (!s.authReady) return html`<div class="boot"><img src="../assets/icon.svg" alt="" width="56" height="56" /><p>Loading SplitIt…</p></div>`;
   if (!s.user) return html`<${SignIn} />`;
-  if (s.profileLoaded && !s.profile) return html`<div class="auth"><${ProfileForm} first=${true} /></div>`;
+  if (D.needsProfile()) return html`<div class="auth"><${ProfileForm} first=${true} /></div>`;
   const [page, a, b, c] = route;
   const section = page === "friends" || page === "friend" ? "friends" : page === "account" ? "account" : "groups";
   let body;
