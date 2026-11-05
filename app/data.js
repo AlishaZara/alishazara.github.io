@@ -3,14 +3,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut as fbSignOut,
-  connectAuthEmulator, signInWithCredential, getRedirectResult,
+  connectAuthEmulator, signInWithCredential, getRedirectResult, deleteUser, reauthenticateWithPopup, reauthenticateWithCredential,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache, connectFirestoreEmulator,
   collection, doc, query, where, onSnapshot, writeBatch, getDocFromServer, arrayUnion, arrayRemove, terminate, clearIndexedDbPersistence,
-  serverTimestamp,
+  serverTimestamp, getDocsFromServer, deleteDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import * as C from "./core.js?v=20261105a";
+import * as C from "./core.js?v=20261105b";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCwvtv268fZG-_kj4aaHgMa732_AckKoKw",
@@ -84,10 +84,99 @@ export async function signInWithGoogle() {
 getRedirectResult(auth).catch(() => {});
 
 /** Emulator only: signs in as a made-up Google account (the real Firebase rejects this). */
+const testToken = (email) => JSON.stringify({ sub: "test-" + email, email, email_verified: true, name: email.split("@")[0] });
 export async function signInForTesting(email) {
   if (!usesEmulator) throw new Error("Not available");
-  const token = JSON.stringify({ sub: "test-" + email, email, email_verified: true, name: email.split("@")[0] });
-  await signInWithCredential(auth, GoogleAuthProvider.credential(token));
+  await signInWithCredential(auth, GoogleAuthProvider.credential(testToken(email)));
+}
+
+// ---------- Deleting your account ----------
+/**
+ * Deletes your MySplitIt account: the shared groups you created (for everyone in them), you from
+ * other people's groups (your name stays in their history, without your email), your profile,
+ * phone number and lookups, and finally your sign-in. Returns a message if something went
+ * wrong, or null when done (the page then reloads, signed out).
+ */
+export async function deleteAccount() {
+  const fu = auth.currentUser, u = state.user;
+  if (!fu || !u) return "Sign in first.";
+  // Google wants a fresh sign-in before an account is deleted. Ask first, so nothing is deleted
+  // if you cancel (and so the Google window opens straight from your click).
+  if (!(Date.now() - Date.parse(fu.metadata.lastSignInTime || 0) < 4 * 60000)) {
+    const m = await reauth(fu);
+    if (m) return m;
+  }
+  stopWatching();
+  const commitAll = async (ops) => {
+    for (let i = 0; i < ops.length; i += 400) {
+      const b = writeBatch(db);
+      ops.slice(i, i + 400).forEach((op) => op(b));
+      await b.commit();
+    }
+  };
+  try {
+    const priv = await getDocFromServer(doc(db, "private", u.uid));
+    const phone = priv.exists() ? priv.data().phone || "" : "";
+    const groups = await getDocsFromServer(query(collection(db, "groups"), where("access", "array-contains", u.email)));
+    for (const g of groups.docs) {
+      if (g.data().owner === u.uid) {
+        const refs = [];
+        for (const part of ["members", "expenses", "payments"]) {
+          (await getDocsFromServer(collection(g.ref, part))).docs.forEach((d) => refs.push(d.ref));
+        }
+        await commitAll(refs.map((r) => (b) => b.delete(r)));
+        await deleteDoc(g.ref);
+      } else {
+        // Two steps, in order: unlink yourself while you still have access, then leave.
+        const mine = await getDocsFromServer(query(collection(g.ref, "members"), where("email", "==", u.email)));
+        await commitAll(mine.docs.map((d) => (b) => b.update(d.ref, { email: "" })));
+        await commitAll([(b) => b.update(g.ref, { access: arrayRemove(u.email) })]);
+      }
+    }
+    const pk = C.phoneKey(phone);
+    for (const k of ["e:" + u.email, ...(pk ? ["p:" + pk] : [])]) {
+      const d = await getDocFromServer(doc(db, "lookup", k));
+      if (d.exists() && d.data().uid === u.uid) await deleteDoc(d.ref);
+    }
+    for (const c of ["private", "phoneChecks", "profiles"]) await deleteDoc(doc(db, c, u.uid));
+  } catch (e) {
+    console.warn("MySplitIt: could not delete account data", e);
+    if (state.user === u) startWatching(u);
+    return "Couldn't delete everything. Check your internet connection and try again.";
+  }
+  try {
+    try {
+      await deleteUser(fu);
+    } catch (e) {
+      if (e.code !== "auth/requires-recent-login") throw e;
+      if (await reauth(fu)) return "Your data is deleted. To finish, sign in again and click Delete account once more.";
+      await deleteUser(fu);
+    }
+  } catch (e) {
+    console.warn("MySplitIt: could not delete sign-in", e);
+    return "Your data is deleted, but the sign-in couldn't be removed. Try Delete account again.";
+  }
+  try { await terminate(db); await clearIndexedDbPersistence(db); } catch (e) { /* cleared on next start */ }
+  return null;
+}
+
+/** Asks Google to confirm it's you again, with the same account. Returns a message if not. */
+async function reauth(fu) {
+  try {
+    if (usesEmulator) {
+      await reauthenticateWithCredential(fu, GoogleAuthProvider.credential(testToken(fu.email)));
+    } else {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account", login_hint: fu.email });
+      await reauthenticateWithPopup(fu, provider);
+    }
+    return null;
+  } catch (e) {
+    if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return "Cancelled. Nothing was deleted.";
+    if (e.code === "auth/user-mismatch") return `Choose the same Google account (${fu.email}) to confirm. Nothing was deleted.`;
+    if (e.code === "auth/popup-blocked") return "Your browser blocked the Google window. Allow pop-ups for this site and try again.";
+    return "Couldn't confirm your account. Nothing was deleted.";
+  }
 }
 
 export async function signOut() {

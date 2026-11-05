@@ -1,7 +1,7 @@
 // MySplitIt Web: the screens. Data and syncing live in data.js; money rules in core.js.
 import { html, render, useState, useEffect, useMemo, useRef } from "https://unpkg.com/htm@3.1.1/preact/standalone.module.js";
-import * as C from "./core.js?v=20261105a";
-import * as D from "./data.js?v=20261105a";
+import * as C from "./core.js?v=20261105b";
+import * as D from "./data.js?v=20261105b";
 
 // ---------- Helpers ----------
 const CATEGORIES = [["Trip", "✈️"], ["Outing", "🍽️"], ["Home", "🏠"], ["Event", "🎉"], ["Other", "📌"]];
@@ -83,6 +83,7 @@ function CurrencySelect({ value, onChange }) {
 function SignIn() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [deleted] = useState(() => { try { const d = sessionStorage.getItem("mysplitit-deleted"); sessionStorage.removeItem("mysplitit-deleted"); return !!d; } catch (e) { return false; } });
   const [email, setEmail] = useState("");
   const google = async () => {
     setBusy(true); setMsg("");
@@ -100,6 +101,7 @@ function SignIn() {
       <input class="input" value=${email} onInput=${(e) => setEmail(e.target.value.trim())} placeholder="alice@example.com" /></label>
       <button class="btn ghost" disabled=${!C.isEmail(email)} onClick=${() => D.signInForTesting(email.toLowerCase()).catch((e) => setMsg(e.message))}>Test sign-in</button></div>`}
     ${msg && html`<p class="bad" style="margin:0">${msg}</p>`}
+    ${deleted && html`<p class="good" style="margin:0">Your MySplitIt account is deleted.</p>`}
     <p class="small muted" style="margin:0">New here? Signing in creates your account. MySplitIt only reads your name and email. <a href="../privacy.html">Privacy</a></p>
     <a class="small" href="../">← Back to the MySplitIt website</a>
   </div></div>`;
@@ -626,6 +628,7 @@ function FriendPage({ fkey: k }) {
 function AccountPage() {
   const s = useStore();
   const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const p = s.profile;
   return html`<div class="stack" style="max-width:640px"><div class="topbar"><h1>Account</h1></div>
     <div class="card row"><${Avatar} name=${s.user.name} size=${48} /><div class="grow"><b>${s.user.name}</b><div class="small muted">${s.user.email}</div></div></div>
@@ -636,8 +639,40 @@ function AccountPage() {
     <div class="card stack"><h3>App</h3>
       <span class="small muted">Get the Android app for offline use on your phone, app lock and more.</span>
       <div class="row wrap"><a class="btn ghost" href="../#download">Download the Android app</a><button class="btn ghost" onClick=${toggleTheme}>Switch light / dark</button></div></div>
-    <button class="btn ghost danger" style="justify-self:start" onClick=${() => D.signOut()}>Sign out</button>
+    <div class="row wrap"><button class="btn ghost" onClick=${() => D.signOut()}>Sign out</button>
+      <button class="btn text danger" onClick=${() => setConfirmDelete(true)}>Delete account</button></div>
+    ${confirmDelete && html`<${DeleteAccountDialog} onClose=${() => setConfirmDelete(false)} />`}
   </div>`;
+}
+
+/** Explains what goes, asks Google to confirm it's you, then deletes the account. */
+function DeleteAccountDialog({ onClose }) {
+  const s = useStore();
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const shared = [...s.groups.values()];
+  const own = shared.filter((g) => g.owner === s.user.uid).length;
+  const others = shared.length - own;
+  const go = async () => {
+    setBusy(true); setMsg("");
+    const m = await D.deleteAccount();
+    if (m) { setMsg(m); setBusy(false); return; }
+    try { sessionStorage.setItem("mysplitit-deleted", "1"); } catch (e) { /* just reload */ }
+    location.replace(location.pathname + location.search);
+  };
+  return html`<${Dialog} title="Delete your account?" onClose=${busy ? null : onClose} actions=${html`
+      <button class="btn text" disabled=${busy} onClick=${onClose}>Cancel</button>
+      <button class="btn primary danger-fill" disabled=${busy} onClick=${go}>${busy ? "Deleting…" : "Delete account"}</button>`}>
+    <p style="margin:0">This permanently deletes:</p>
+    <ul style="margin:0;padding-left:20px">
+      <li>your profile and phone number</li>
+      ${own > 0 && html`<li>${own === 1 ? "the 1 shared group you created, for everyone in it" : `the ${own} shared groups you created, for everyone in them`}</li>`}
+      ${others > 0 && html`<li>you from ${others} group${others === 1 ? "" : "s"} others shared with you (your name stays in their past expenses)</li>`}
+      <li>your MySplitIt sign-in</li>
+    </ul>
+    <p class="small muted" style="margin:0">Groups that are only on your Android phone stay there. This can't be undone. Google may ask you to confirm your account first.</p>
+    ${msg && html`<p class="bad" style="margin:0">${msg}</p>`}
+  <//>`;
 }
 
 // ---------- Shell ----------
