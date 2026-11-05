@@ -1,4 +1,4 @@
-/* SplitIt website. Plain CSS, no build step. */
+/* MySplitIt website. Plain CSS, no build step. */
 :root {
   --brand: #00897b;
   --brand-strong: #00695c;
@@ -191,7 +191,7 @@ img { max-width: 100%; display: block; }
 .strip .strip-web span { color: rgba(255, 255, 255, .85); }
 .strip .strip-web:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0, 137, 123, .45); }
 
-/* SplitIt Web button and section */
+/* MySplitIt Web button and section */
 .btn-web { background: var(--surface); color: var(--brand-strong); border-color: var(--brand); }
 .btn-web:hover { background: var(--brand-soft); }
 .web-section { background: linear-gradient(180deg, var(--bg) 0%, var(--brand-soft) 100%); }

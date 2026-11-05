@@ -1,4 +1,4 @@
-// SplitIt web: the same splitting rules as the Android app, so both always agree.
+// MySplitIt web: the same splitting rules as the Android app, so both always agree.
 // Amounts are whole cents/paise (integers). No browser or Firebase code in this file.
 
 export const MAX_ACCESS = 50;

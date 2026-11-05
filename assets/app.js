@@ -1,4 +1,4 @@
-// SplitIt website behaviour. No libraries.
+// MySplitIt website behaviour. No libraries.
 (function () {
   "use strict";
   var root = document.documentElement;
@@ -100,7 +100,7 @@
 
   document.getElementById("year").textContent = String(new Date().getFullYear());
 
-  // Contact form: sent by FormSubmit (formsubmit.co) to the SplitIt inbox.
+  // Contact form: sent by FormSubmit (formsubmit.co) to the MySplitIt inbox.
   var FORM_ENDPOINT = "https://formsubmit.co/ajax/phanee.apps@gmail.com";
   var form = document.getElementById("contact-form");
   var statusEl = document.getElementById("form-status");
@@ -131,7 +131,7 @@
         email: email,
         topic: data.get("topic"),
         message: message,
-        _subject: "SplitIt website: " + data.get("topic") + " from " + name,
+        _subject: "MySplitIt website: " + data.get("topic") + " from " + name,
         _replyto: email,
         _template: "table",
         _captcha: "false"

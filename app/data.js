@@ -1,4 +1,4 @@
-// SplitIt web: sign-in, live sync and saving, using the same Firebase project and data
+// MySplitIt web: sign-in, live sync and saving, using the same Firebase project and data
 // layout as the Android app. Access is enforced by the Firestore security rules.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
@@ -10,7 +10,7 @@ import {
   collection, doc, query, where, onSnapshot, writeBatch, getDocFromServer, arrayUnion, arrayRemove, terminate, clearIndexedDbPersistence,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import * as C from "./core.js?v=20261104b";
+import * as C from "./core.js?v=20261105a";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCwvtv268fZG-_kj4aaHgMa732_AckKoKw",
@@ -59,7 +59,7 @@ const groupRef = (id) => doc(db, "groups", id);
 const sub = (gid, part, id) => doc(db, "groups", gid, part, id);
 const retryDelay = (n) => Math.min(2000 * 2 ** Math.min(n, 4), 30000);
 function fail(e) {
-  console.warn("SplitIt sync problem", e);
+  console.warn("MySplitIt sync problem", e);
   if (e && e.code === "unavailable") return;
   setError(e && e.code === "permission-denied"
     ? "A change couldn't be saved. If someone removed you from this group, it will disappear shortly."
@@ -133,7 +133,7 @@ function startWatching(u) {
     if (s.exists() || !s.metadata.fromCache) state.phoneLoaded = true;
     changed();
   }, () => {}));
-  // SplitIt's WhatsApp number. Not readable or not there: WhatsApp verification is off and
+  // MySplitIt's WhatsApp number. Not readable or not there: WhatsApp verification is off and
   // people type their number instead.
   listeners.push(onSnapshot(doc(db, "config", "public"), { includeMetadataChanges: true }, (s) => {
     state.whatsapp = String((s.exists() && s.data().whatsapp) || "").replace(/\D/g, "");
@@ -270,11 +270,11 @@ export function newCode() {
   return Array.from(r, (b) => CODE_CHARS[b % 32]).join("");
 }
 export const whatsappLink = (number, code) =>
-  `https://wa.me/${number}?text=${encodeURIComponent("SplitIt verification code: " + code)}`;
+  `https://wa.me/${number}?text=${encodeURIComponent("MySplitIt verification code: " + code)}`;
 
 /**
  * Starts proving your phone number: saves a one-time code for your account and returns the
- * WhatsApp link that sends it to SplitIt. The verification server does the rest, and
+ * WhatsApp link that sends it to MySplitIt. The verification server does the rest, and
  * state.phoneVerified turns true a few seconds after the message is sent.
  */
 export async function startPhoneCheck() {
@@ -314,7 +314,7 @@ export async function saveProfile({ name, phone = "", adults, kids, friends }) {
       const oldPhone = C.phoneKey(state.savedPhone || "");
       if (typed !== oldPhone) {
         const d = await getDocFromServer(doc(db, "lookup", "p:" + typed));
-        if (d.exists() && d.data().uid !== u.uid) return "That number is already used by another SplitIt account.";
+        if (d.exists() && d.data().uid !== u.uid) return "That number is already used by another MySplitIt account.";
         if (!d.exists()) await writeBatch(db).set(doc(db, "lookup", "p:" + typed), { uid: u.uid }).commit();
       }
       if (oldPhone && oldPhone !== typed) {
@@ -338,7 +338,7 @@ export async function saveProfile({ name, phone = "", adults, kids, friends }) {
 }
 const clampInt = (x, lo, hi) => Math.min(hi, Math.max(lo, Math.trunc(Number(x) || 0)));
 
-/** Finds a SplitIt user by exact email or phone number. */
+/** Finds a MySplitIt user by exact email or phone number. */
 export async function findUser(text) {
   const q = text.trim();
   const email = C.isEmail(q.toLowerCase()) ? q.toLowerCase() : null;

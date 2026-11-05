@@ -1,7 +1,7 @@
-// SplitIt Web: the screens. Data and syncing live in data.js; money rules in core.js.
+// MySplitIt Web: the screens. Data and syncing live in data.js; money rules in core.js.
 import { html, render, useState, useEffect, useMemo, useRef } from "https://unpkg.com/htm@3.1.1/preact/standalone.module.js";
-import * as C from "./core.js?v=20261104b";
-import * as D from "./data.js?v=20261104d";
+import * as C from "./core.js?v=20261105a";
+import * as D from "./data.js?v=20261105a";
 
 // ---------- Helpers ----------
 const CATEGORIES = [["Trip", "✈️"], ["Outing", "🍽️"], ["Home", "🏠"], ["Event", "🎉"], ["Other", "📌"]];
@@ -91,8 +91,8 @@ function SignIn() {
   };
   return html`<div class="auth"><div class="card">
     <img class="logo" src="../assets/icon.svg" alt="" />
-    <h1>SplitIt Web</h1>
-    <p class="muted" style="margin:0">Sign in to see your groups and add expenses with friends on the SplitIt app. Everything syncs live with your phone.</p>
+    <h1>MySplitIt Web</h1>
+    <p class="muted" style="margin:0">Sign in to see your groups and add expenses with friends on the MySplitIt app. Everything syncs live with your phone.</p>
     <button class="btn google" disabled=${busy} onClick=${google}>
       <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.8 6.1C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 7l7.2 5.6c4.2-3.9 7.1-9.6 7.1-17.1z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.8-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.7 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.7 2.3-8.7 2.3-6.3 0-11.6-4.2-13.5-9.9l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>
       ${busy ? "Signing in…" : "Continue with Google"}</button>
@@ -100,8 +100,8 @@ function SignIn() {
       <input class="input" value=${email} onInput=${(e) => setEmail(e.target.value.trim())} placeholder="alice@example.com" /></label>
       <button class="btn ghost" disabled=${!C.isEmail(email)} onClick=${() => D.signInForTesting(email.toLowerCase()).catch((e) => setMsg(e.message))}>Test sign-in</button></div>`}
     ${msg && html`<p class="bad" style="margin:0">${msg}</p>`}
-    <p class="small muted" style="margin:0">New here? Signing in creates your account. SplitIt only reads your name and email. <a href="../privacy.html">Privacy</a></p>
-    <a class="small" href="../">← Back to the SplitIt website</a>
+    <p class="small muted" style="margin:0">New here? Signing in creates your account. MySplitIt only reads your name and email. <a href="../privacy.html">Privacy</a></p>
+    <a class="small" href="../">← Back to the MySplitIt website</a>
   </div></div>`;
 }
 
@@ -128,8 +128,8 @@ function ProfileForm({ first, onDone }) {
   return html`<div class="card stack" style="max-width:560px">
     <h2>${first ? (p ? (wa ? "Verify your phone number" : "Add your phone number") : "Set up your profile") : "Your profile"}</h2>
     ${first && html`<p class="muted" style="margin:0">${p
-      ? (wa ? "SplitIt now verifies every account's phone number, so friends can find the right person. It takes one WhatsApp message."
-        : "SplitIt now needs a phone number on every account, so friends can find you by number. Add yours to carry on.")
+      ? (wa ? "MySplitIt now verifies every account's phone number, so friends can find the right person. It takes one WhatsApp message."
+        : "MySplitIt now needs a phone number on every account, so friends can find you by number. Add yours to carry on.")
       : `Signed in as ${s.user.email}. ${wa ? "Verify" : "Add"} your phone number and say who usually comes with you, so friends can find you and add you with your family in one tap.`}</p>`}
     <label class="field">Your name<input class="input" value=${name} maxlength="100" onInput=${(e) => setName(e.target.value)} /></label>
     ${wa ? html`<${PhoneVerification} />` : html`<label class="field">Phone number<input class="input ${phoneBad ? "error" : ""}" value=${phone} maxlength="20" inputmode="tel" autocomplete="tel" required placeholder="+1 555 010 1234" onInput=${(e) => setPhone(e.target.value)} />
@@ -147,7 +147,7 @@ function ProfileForm({ first, onDone }) {
   </div>`;
 }
 
-/** Proving your phone number: WhatsApp opens with a code ready to send to SplitIt; this updates by itself. */
+/** Proving your phone number: WhatsApp opens with a code ready to send to MySplitIt; this updates by itself. */
 function PhoneVerification() {
   const s = D.state;
   const [check, setCheck] = useState(null);
@@ -184,7 +184,7 @@ function PhoneVerification() {
     : s.phoneVerified ? html`
       <p style="margin:0"><b>${s.myPhone}</b> <span class="good">✓ Verified</span></p>
       <p class="small muted" style="margin:0">Friends can find you by this number as well as by ${s.user.email}.</p>`
-    : html`<p class="muted" style="margin:0">Required. ${desktop ? "Click the button and scan the code with your phone" : "Tap the button"}: WhatsApp opens with a short message to SplitIt. Just tap Send, and your WhatsApp number is verified in a few seconds. No SMS, no typing.</p>`}
+    : html`<p class="muted" style="margin:0">Required. ${desktop ? "Click the button and scan the code with your phone" : "Tap the button"}: WhatsApp opens with a short message to MySplitIt. Just tap Send, and your WhatsApp number is verified in a few seconds. No SMS, no typing.</p>`}
     ${problem && html`<p class="bad small" style="margin:0">${problem}</p>`}
     ${!check && html`<div class="row"><button class=${"btn " + (s.phoneVerified ? "ghost" : "primary")} disabled=${busy} onClick=${start}>
       ${busy ? "Starting…" : s.phoneVerified ? "Change number" : "Verify with WhatsApp"}</button></div>`}
@@ -433,12 +433,12 @@ function AddPeople({ g, onClose }) {
   const search = async (text) => { const v = text ?? q; if (!v.trim()) return; setBusy(true); setRes(null); setRes(await D.findUser(v)); setBusy(false); };
   if (mode === "manual") return html`<${MemberDialog} g=${g} onClose=${onClose} />`;
   if (mode === "choose") return html`<${Dialog} title="Add people" onClose=${onClose} actions=${html`<button class="btn text" onClick=${onClose}>Cancel</button>`}>
-    <button class="choice" onClick=${() => setMode("manual")}><b>✍️ Create manually</b><span class="small muted">Type a name. Works for anyone, even without SplitIt.</span></button>
-    <button class="choice" onClick=${() => setMode("find")}><b>🔍 Add a SplitIt user</b><span class="small muted">Find them by email or phone number. Their family comes along.</span></button>
+    <button class="choice" onClick=${() => setMode("manual")}><b>✍️ Create manually</b><span class="small muted">Type a name. Works for anyone, even without MySplitIt.</span></button>
+    <button class="choice" onClick=${() => setMode("find")}><b>🔍 Add a MySplitIt user</b><span class="small muted">Find them by email or phone number. Their family comes along.</span></button>
   </${Dialog}>`;
   const p = res && res.profile;
   const existing = p && g.members.find((m) => m.email === p.email);
-  return html`<${Dialog} title="Add a SplitIt user" onClose=${onClose} actions=${html`<button class="btn primary" onClick=${onClose}>Done</button>`}>
+  return html`<${Dialog} title="Add a MySplitIt user" onClose=${onClose} actions=${html`<button class="btn primary" onClick=${onClose}>Done</button>`}>
     ${joined.length > 0 && html`<div class="stack"><span class="small muted">Joined this group · click to add</span>
       ${joined.map((j) => html`<button class="btn ghost small" onClick=${() => { setQ(j); search(j); }}>${j}</button>`)}</div>`}
     <div class="row"><input class="input grow" placeholder="friend@gmail.com or phone number" value=${q} onInput=${(e) => { setQ(e.target.value); setRes(null); }}
@@ -450,14 +450,14 @@ function AddPeople({ g, onClose }) {
       ${existing ? html`<span style="color:var(--brand-strong)">Already in this group as ${existing.name}</span>`
         : html`<button class="btn primary" style="justify-self:end" onClick=${() => { D.addProfileToGroup(g.id, p); setAdded([...added, p.name]); setRes(null); setQ(""); }}>Add</button>`}</div>`}
     ${res && res.none && html`<div class="card stack">${res.email
-      ? html`<span>No SplitIt account uses ${res.email} yet.</span><span class="small muted">You can still add them; they'll see the group once they sign in with this email.</span>
+      ? html`<span>No MySplitIt account uses ${res.email} yet.</span><span class="small muted">You can still add them; they'll see the group once they sign in with this email.</span>
         <button class="btn ghost" style="justify-self:end" onClick=${() => {
           const taken = new Set(g.members.map((m) => m.name.trim().toLowerCase()));
           let n = C.nameFromEmail(res.email); if (taken.has(n.toLowerCase())) n += ` (${res.email.split("@")[0]})`;
           D.saveMember(g.id, { name: n, email: res.email, isFamily: false, adults: 1, kids: 0 }); setAdded([...added, n]); setRes(null); setQ("");
-          location.href = `mailto:${encodeURIComponent(res.email)}?subject=${encodeURIComponent(`Join "${g.name}" on SplitIt`)}&body=${encodeURIComponent(`Hi! I've added you to "${g.name}" on SplitIt. Sign in with Google using ${res.email} at ${location.origin}${location.pathname} or in the SplitIt app, and the group will show up.`)}`;
+          location.href = `mailto:${encodeURIComponent(res.email)}?subject=${encodeURIComponent(`Join "${g.name}" on MySplitIt`)}&body=${encodeURIComponent(`Hi! I've added you to "${g.name}" on MySplitIt. Sign in with Google using ${res.email} at ${location.origin}${location.pathname} or in the MySplitIt app, and the group will show up.`)}`;
         }}>Add and invite by email</button>`
-      : html`<span>No SplitIt account has this number.</span><span class="small muted">Ask for their Gmail address instead.</span>`}</div>`}
+      : html`<span>No MySplitIt account has this number.</span><span class="small muted">Ask for their Gmail address instead.</span>`}</div>`}
     ${added.length > 0 && html`<p class="small" style="margin:0;color:var(--brand-strong)">Added: ${added.join(", ")}</p>`}
   </${Dialog}>`;
 }
@@ -644,7 +644,7 @@ function AccountPage() {
 function App() {
   const s = useStore();
   const route = useRoute();
-  if (!s.authReady) return html`<div class="boot"><img src="../assets/icon.svg" alt="" width="56" height="56" /><p>Loading SplitIt…</p></div>`;
+  if (!s.authReady) return html`<div class="boot"><img src="../assets/icon.svg" alt="" width="56" height="56" /><p>Loading MySplitIt…</p></div>`;
   if (!s.user) return html`<${SignIn} />`;
   if (D.needsProfile()) return html`<div class="auth"><${ProfileForm} first=${true} /></div>`;
   const [page, a, b, c] = route;
@@ -658,7 +658,7 @@ function App() {
   else body = html`<${GroupsPage} />`;
   const nav = [["groups", "Groups"], ["friends", "Friends"], ["account", "Account"]];
   return html`<div class="shell">
-    <aside class="side"><a class="brand" href="../"><img src="../assets/icon.svg" alt="" />SplitIt</a>
+    <aside class="side"><a class="brand" href="../"><img src="../assets/icon.svg" alt="" />MySplitIt</a>
       <nav class="nav">${nav.map(([k, l]) => html`<a href=${"#/" + k} class=${section === k ? "active" : ""}>${ICON[k]}${l}</a>`)}</nav>
       <div class="foot"><span class=${"status " + s.status}>${{ synced: "● Synced", syncing: "Syncing…", offline: "Offline · will sync later" }[s.status] || ""}</span>
         <span class="ellipsis">${s.user.email}</span><button class="btn text small" style="justify-self:start;padding:0" onClick=${toggleTheme}>${ICON.theme} Theme</button></div></aside>
